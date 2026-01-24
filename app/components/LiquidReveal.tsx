@@ -666,14 +666,14 @@ export default function LiquidReveal({ imageA, imageB, className = "", children 
   }, [initWebGL, resize, render, handleMouseMove, handleMouseEnter, handleMouseLeave]);
   
   return (
-    <div ref={containerRef} className={`relative w-full h-screen overflow-hidden ${className}`}>
+    <div ref={containerRef} className={`relative w-full min-h-screen h-[100dvh] overflow-hidden ${className}`}>
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
         style={{ display: "block" }}
       />
-      <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
-        <div className="pointer-events-auto">
+      <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none px-4 sm:px-6 md:px-8">
+        <div className="pointer-events-auto w-full max-w-5xl">
           {children}
         </div>
       </div>

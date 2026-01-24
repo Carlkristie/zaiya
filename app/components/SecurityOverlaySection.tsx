@@ -44,10 +44,10 @@ export default function SecurityOverlaySection() {
       >
         <div
           ref={textRef}
-          className="text-2xl md:text-5xl font-light text-white text-center px-8 max-w-4xl leading-relaxed font-inter"
+          className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-light text-white text-center px-6 sm:px-8 md:px-12 max-w-4xl leading-relaxed sm:leading-relaxed md:leading-relaxed font-inter"
         >
           {displayedText}
-          <span className="inline-block w-0.5 h-8 md:h-12 bg-white ml-1 animate-pulse" />
+          <span className="inline-block w-0.5 h-6 sm:h-8 md:h-10 lg:h-12 bg-white ml-1 animate-pulse" />
         </div>
       </motion.div>
     </div>

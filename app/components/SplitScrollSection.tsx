@@ -38,23 +38,23 @@ export default function SplitScrollSection() {
     <section ref={containerRef} className="relative bg-black text-white">
       <div className="flex flex-col lg:flex-row relative">
         {/* Left Side - Scrolling Content */}
-        <div className="w-full lg:w-1/2 p-8 lg:p-16 space-y-24 relative z-10">
+        <div className="w-full lg:w-1/2 px-5 sm:px-8 md:px-12 lg:px-16 py-8 lg:py-16 space-y-16 sm:space-y-20 md:space-y-24 relative z-10">
           {services.map((service, index) => (
             <motion.div
               key={service.id}
-              initial={{ opacity: 0, x: -50 }}
+              initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               viewport={{ once: false, amount: 0.3 }}
-              className="min-h-screen flex flex-col justify-center space-y-6"
+              className="min-h-[70vh] sm:min-h-[80vh] lg:min-h-screen flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6"
             >
-              <span className="text-sm tracking-widest text-gray-400 uppercase">
+              <span className="text-xs sm:text-sm tracking-widest text-gray-400 uppercase">
                 {service.id}
               </span>
-              <h2 className="text-4xl md:text-6xl font-light leading-tight font-[family-name:var(--font-space-grotesk)]">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight font-[family-name:var(--font-space-grotesk)]">
                 {service.title}
               </h2>
-              <p className="text-lg md:text-xl leading-relaxed text-gray-400 max-w-2xl">
+              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-gray-400 max-w-2xl">
                 {service.description}
               </p>
             </motion.div>
