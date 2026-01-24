@@ -37,7 +37,7 @@ export default function SecurityOverlaySection() {
   }, [isInView]);
 
   return (
-    <div ref={containerRef} className="relative h-[200vh]">
+    <div ref={containerRef} className="relative">
       {/* Overlay that slides up */}
       <motion.div
         className="sticky top-0 h-screen w-full bg-black z-10 flex items-center justify-center"

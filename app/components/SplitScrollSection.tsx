@@ -1,5 +1,5 @@
 "use client";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { useRef } from "react";
 import { AnimatedGridPattern } from "./AnimatedGridPattern";
 
@@ -33,46 +33,66 @@ const services = [
 
 export default function SplitScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(containerRef, { margin: "-10% 0px -10% 0px" });
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const rightSideOpacity = useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0]);
 
   return (
     <section ref={containerRef} className="relative bg-black text-white">
-      <div className="flex flex-col lg:flex-row relative">
-        {/* Left Side - Scrolling Content */}
-        <div className="w-full lg:w-1/2 px-5 sm:px-8 md:px-12 lg:px-16 py-8 lg:py-16 space-y-16 sm:space-y-20 md:space-y-24 relative z-10">
-          {services.map((service, index) => (
-            <motion.div
-              key={service.id}
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: false, amount: 0.3 }}
-              className="min-h-[70vh] sm:min-h-[80vh] lg:min-h-screen flex flex-col justify-center space-y-4 sm:space-y-5 md:space-y-6"
-            >
-              <span className="text-xs sm:text-sm tracking-widest text-gray-400 uppercase">
-                {service.id}
-              </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light leading-tight font-[family-name:var(--font-space-grotesk)]">
-                {service.title}
-              </h2>
-              <p className="text-base sm:text-lg md:text-xl leading-relaxed text-gray-400 max-w-2xl">
-                {service.description}
-              </p>
-            </motion.div>
-          ))}
-        </div>
+      {/* Right Side - Fixed Background (visible on all screen sizes when section is in view) */}
+      {isInView && (
+        <motion.div 
+          style={{ opacity: rightSideOpacity }}
+          className="fixed top-0 right-0 w-full lg:w-1/2 h-screen overflow-hidden pointer-events-none"
+        >
+          <AnimatedGridPattern
+            numSquares={30}
+            maxOpacity={0.3}
+            duration={3}
+            repeatDelay={1}
+            className="absolute inset-0 h-full w-full fill-gray-700/20 stroke-gray-700/20"
+          />
+        </motion.div>
+      )}
 
-        {/* Right Side - Fixed Background */}
-        <div className="hidden lg:block lg:w-1/2 lg:h-screen lg:sticky lg:top-0 lg:self-start">
-          <div className="relative w-full h-full overflow-hidden">
-            <AnimatedGridPattern
-              numSquares={30}
-              maxOpacity={0.3}
-              duration={3}
-              repeatDelay={1}
-              className="absolute inset-0 h-full w-full fill-gray-700/20 stroke-gray-700/20"
-            />
-          </div>
-        </div>
+      {/* Left Side - Scrolling Content */}
+      <div className="w-full lg:w-1/2 px-5 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-16 space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 relative z-10">
+        {/* Section Heading */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light leading-tight font-[family-name:var(--font-space-grotesk)]"
+        >
+          What we do
+        </motion.h2>
+        
+        {services.map((service, index) => (
+          <motion.div
+            key={service.id}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: false, amount: 0.3 }}
+            className={`min-h-[50vh] sm:min-h-[60vh] md:min-h-[70vh] lg:min-h-screen flex flex-col space-y-3 sm:space-y-4 md:space-y-5 lg:space-y-6 ${index === 0 ? 'justify-start' : 'justify-center'}`}
+          >
+            <span className="text-xs sm:text-sm tracking-widest text-gray-400 uppercase">
+              {service.id}
+            </span>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light leading-tight font-[family-name:var(--font-space-grotesk)]">
+              {service.title}
+            </h2>
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed text-gray-400 max-w-2xl">
+              {service.description}
+            </p>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
