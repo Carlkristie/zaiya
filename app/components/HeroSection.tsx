@@ -1,8 +1,8 @@
 "use client";
 import LiquidReveal from "./LiquidReveal";
 import { motion } from "framer-motion";
-import imageLight from '../src/assets/dark-background.png';
-import imageDark from '../src/assets/dark-background2.png';
+import imageLight from '../src/assets/dark-background.webp';
+import imageDark from '../src/assets/dark-background2.webp';
 
 export default function HeroSection() {
   return (
