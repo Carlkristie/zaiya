@@ -27,16 +27,16 @@ export default function Navbar() {
 
         {/* Center Navigation */}
         <div className="hidden lg:flex items-center gap-8 text-[15px] font-medium text-slate-600">
-          <Link href="#" className="hover:text-gray-600">
+          <Link href="/" className="hover:text-gray-600">
             Home
           </Link>
-          <Link href="#" className="hover:text-gray-600">
+          <Link href="/about" className="hover:text-gray-600">
             About
           </Link>
-          <Link href="#" className="hover:text-gray-600">
+          <Link href="/services" className="hover:text-gray-600">
             Services
           </Link>
-          <Link href="#" className="hover:text-gray-600">
+          <Link href="/contact" className="hover:text-gray-600">
             Contact
           </Link>
         </div>
@@ -89,7 +89,7 @@ export default function Navbar() {
 
       </nav>
 
-      {/* Mobile Menu Fullscreen Overlay */}
+      {/* Mobile Menu Fullscreen Overlay */}  
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
@@ -129,10 +129,10 @@ export default function Navbar() {
               {/* Navigation Links */}
               <nav className="space-y-2">
                 {[
-                  { name: 'Home', index: '01' },
-                  { name: 'About', index: '02' },
-                  { name: 'Services', index: '03' },
-                  { name: 'Contact', index: '04' }
+                  { name: 'Home', index: '01', href: '/' },
+                  { name: 'About', index: '02', href: '/about' },
+                  { name: 'Services', index: '03', href: '/services' },
+                  { name: 'Contact', index: '04', href: '/contact' }
                 ].map((item, i) => (
                   <motion.div
                     key={item.name}
@@ -142,7 +142,7 @@ export default function Navbar() {
                     transition={{ delay: 0.1 + i * 0.1, duration: 0.5, ease: "easeOut" }}
                   >
                     <Link 
-                      href="#" 
+                      href={item.href} 
                       onClick={() => setMobileMenuOpen(false)}
                       className="group flex items-center gap-4 py-3 overflow-hidden"
                     >

@@ -3,6 +3,12 @@ import HeroSection from "./components/HeroSection";
 import SecurityOverlaySection from "./components/SecurityOverlaySection";
 import SplitScrollSection from "./components/SplitScrollSection";
 import ProblemSolutionSection from "./components/ProblemSolutionSection";
+import WorkflowJourneySection from "./components/WorkflowJourneySection";
+import TestimonialsSection from "./components/TestimonialsSection";
+import StatsSection from "./components/StatsSection";
+import CTASection from "./components/CTASection";
+import NextPageArrow from "./components/NextPageArrow";
+import Footer from "./components/Footer";
 
 export default function Home() {
   return (
@@ -13,7 +19,13 @@ export default function Home() {
       </div>
       <SecurityOverlaySection />
       <SplitScrollSection />
+      <WorkflowJourneySection />
       <ProblemSolutionSection />
+      <StatsSection />
+      <TestimonialsSection />
+      <CTASection />
+      <NextPageArrow />
+      <Footer />
     </div>
   );
 }
