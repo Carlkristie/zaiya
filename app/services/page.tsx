@@ -332,7 +332,19 @@ function ServiceCard({
 
 /* ─── Floating Particles Background ─── */
 function FloatingParticles() {
-  const particles = Array.from({ length: 40 }, (_, i) => ({
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Detect iOS/mobile: skip expensive fixed-position animated particles
+    const mobile = window.innerWidth < 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    setIsMobile(mobile);
+  }, []);
+
+  // On mobile/iOS: render nothing — fixed-position infinite animations destroy iOS perf
+  if (isMobile) return null;
+
+  // Desktop only: reduced from 40 to 15 particles
+  const particles = Array.from({ length: 15 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -403,8 +415,8 @@ export default function ServicesPage() {
           }}
         />
 
-        {/* Ambient glow */}
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-blue-600/5 via-purple-600/8 to-cyan-600/5 rounded-full blur-[120px] pointer-events-none" />
+        {/* Ambient glow — reduced blur for iOS perf */}
+        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-gradient-to-r from-blue-600/5 via-purple-600/8 to-cyan-600/5 rounded-full blur-3xl pointer-events-none" />
 
         <motion.div
           style={{ opacity: heroOpacity, y: heroY, scale: heroScale }}
@@ -591,10 +603,10 @@ export default function ServicesPage() {
 
       {/* ──── CTA ──── */}
       <section className="relative py-24 sm:py-32 md:py-40 overflow-hidden">
-        {/* Gradient orbs */}
+        {/* Gradient orbs — reduced blur for iOS perf */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-purple-600/5 rounded-full blur-[100px]" />
-          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-blue-600/5 rounded-full blur-[100px]" />
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-purple-600/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[300px] bg-blue-600/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 text-center">

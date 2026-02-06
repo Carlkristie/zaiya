@@ -263,10 +263,10 @@ export default function AboutPage() {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        {/* Ambient orbs */}
+        {/* Ambient orbs — reduced blur for iOS perf */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[160px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-600/8 rounded-full blur-[140px]" />
+          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-600/8 rounded-full blur-3xl" />
         </div>
 
         {/* Grid pattern */}
@@ -437,8 +437,8 @@ export default function AboutPage() {
           VALUES
       ═══════════════════════════════════════════════════ */}
       <section className="relative py-20 sm:py-28 md:py-36 bg-slate-950">
-        {/* Ambient orb */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[200px] pointer-events-none" />
+        {/* Ambient orb — reduced blur for iOS perf */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16">
           {/* Section header */}
@@ -681,10 +681,10 @@ export default function AboutPage() {
           CTA
       ═══════════════════════════════════════════════════ */}
       <section className="relative py-20 sm:py-28 md:py-36 overflow-hidden">
-        {/* Ambient orbs */}
+        {/* Ambient orbs — reduced blur for iOS perf */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-600/8 rounded-full blur-[120px]" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-600/8 rounded-full blur-[120px]" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-600/8 rounded-full blur-3xl" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-600/8 rounded-full blur-3xl" />
         </div>
 
         {/* Grid texture */}

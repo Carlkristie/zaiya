@@ -10,7 +10,8 @@ export default function Navbar() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-5 w-full max-w-[1400px] mx-auto gap-2 sm:gap-4">
-      <nav className="flex-1 flex items-center justify-between bg-white/90 backdrop-blur-md px-3 sm:px-4 py-2 rounded-full shadow-md">
+      {/* bg-white/95 on mobile avoids expensive backdrop-blur on iOS Safari */}
+      <nav className="flex-1 flex items-center justify-between bg-white/95 sm:bg-white/90 sm:backdrop-blur-md px-3 sm:px-4 py-2 rounded-full shadow-md">
         {/* Logo Section */}
         <Link href="/" className="flex items-center gap-1.5 sm:gap-2 pl-1 sm:pl-2">
           <Image
@@ -94,16 +95,16 @@ export default function Navbar() {
             className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen z-50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 md:hidden overflow-hidden"
             style={{ margin: 0, maxWidth: '100vw' }}
           >
-            {/* Decorative Background Elements */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-20 left-10 w-64 h-64 bg-purple-500 rounded-full blur-3xl"></div>
-              <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-500 rounded-full blur-3xl"></div>
+            {/* Decorative Background Elements — no blur on mobile for iOS perf */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-20 left-10 w-64 h-64 bg-purple-500 rounded-full opacity-40"></div>
+              <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-500 rounded-full opacity-40"></div>
             </div>
 
             {/* Close Button */}
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="absolute top-6 right-6 z-50 w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full border border-white/20"
+              className="absolute top-6 right-6 z-50 w-12 h-12 flex items-center justify-center bg-white/15 rounded-full border border-white/20"
             >
               <span
                 className="absolute w-6 h-0.5 bg-white"

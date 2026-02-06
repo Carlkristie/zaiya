@@ -193,7 +193,9 @@ function MistTransition() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
+    // Detect iOS/mobile: iOS Safari struggles with complex fragment shaders
+    const mobile = window.innerWidth < 768 || /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    setIsMobile(mobile);
   }, []);
 
   const initGL = useCallback((canvas: HTMLCanvasElement) => {
@@ -643,9 +645,9 @@ export default function ContactPage() {
           />
         </div>
 
-        {/* Gradient orbs */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-blue-500/6 rounded-full blur-3xl" />
+        {/* Gradient orbs — reduced blur for iOS perf */}
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-purple-500/8 rounded-full blur-2xl" />
+        <div className="absolute bottom-0 left-1/4 w-80 h-80 bg-blue-500/6 rounded-full blur-2xl" />
 
         <div className="relative z-10 max-w-7xl mx-auto w-full px-5 sm:px-8 md:px-12 lg:px-16 pb-16 sm:pb-20 pt-32 sm:pt-36">
           <motion.span
@@ -841,7 +843,7 @@ export default function ContactPage() {
                 }}
               />
             </div>
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-2xl pointer-events-none" />
 
             <div className="relative z-10 text-center max-w-2xl mx-auto">
               <span className="inline-block text-xs tracking-[0.25em] uppercase text-slate-500 font-[family-name:var(--font-geist-mono)] mb-4">

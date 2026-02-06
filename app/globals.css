@@ -58,14 +58,23 @@ html, body {
     backface-visibility: hidden;
   }
   
-  /* Reduce blur effects on mobile (very expensive) */
+  /* Reduce blur effects on mobile — iOS renders these on CPU */
   .blur-3xl {
-    filter: blur(40px) !important;
+    filter: blur(24px) !important;
+  }
+  .blur-2xl {
+    filter: blur(16px) !important;
   }
   
+  /* Disable backdrop-blur on mobile — #1 iOS Safari perf killer */
   .backdrop-blur-md {
-    -webkit-backdrop-filter: blur(8px) !important;
-    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Layout containment for scroll sections — prevents iOS repaints */
+  section {
+    contain: layout style;
   }
 }
 
@@ -79,6 +88,22 @@ html, body {
 /* Smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Hero section CSS-only fade-in (replaces Framer Motion for faster LCP) */
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-hero-fade-in {
+  animation: hero-fade-in 0.8s ease-out 0.2s both;
 }
 
 /* Touch-friendly tap targets */
