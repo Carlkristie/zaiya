@@ -24,6 +24,8 @@ export default function SecurityOverlaySection() {
     }
 
     let index = 0;
+    const isMobile = window.innerWidth < 768;
+    const speed = isMobile ? 80 : 50; // Slower on mobile to reduce re-renders
     const interval = setInterval(() => {
       if (index <= fullText.length) {
         setDisplayedText(fullText.slice(0, index));
@@ -31,7 +33,7 @@ export default function SecurityOverlaySection() {
       } else {
         clearInterval(interval);
       }
-    }, 50);
+    }, speed);
 
     return () => clearInterval(interval);
   }, [isInView]);

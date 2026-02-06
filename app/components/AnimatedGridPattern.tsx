@@ -129,10 +129,13 @@ export function AnimatedGridPattern({
             transition={{
               duration,
               repeat: 1,
-              delay: index * 0.1,
+              delay: index * 0.3,
               repeatType: "reverse",
             }}
-            onAnimationComplete={() => updateSquarePosition(id)}
+            onAnimationComplete={() => {
+              // Throttle re-renders by only updating every other completion
+              if (index % 3 === 0) updateSquarePosition(id);
+            }}
             key={`${x}-${y}-${index}`}
             width={width - 1}
             height={height - 1}

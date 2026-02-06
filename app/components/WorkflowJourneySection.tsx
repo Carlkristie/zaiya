@@ -52,17 +52,21 @@ function CircuitCanvas({ progress }: { progress: number }) {
   const timeRef = useRef<number>(0);
   const progressRef = useRef<number>(0);
   const [isMobile, setIsMobile] = useState(false);
+  const isVisibleRef = useRef(true);
 
   // Detect mobile on mount
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
+    const mobile = window.innerWidth < 768;
+    setIsMobile(mobile);
+    // Skip WebGL entirely on mobile for performance
+    if (mobile) return;
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || isMobile) return;
 
     const canvas = canvasRef.current;
     const width = canvas.clientWidth || window.innerWidth;
@@ -72,11 +76,11 @@ function CircuitCanvas({ progress }: { progress: number }) {
     const renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
-      antialias: true,
+      antialias: false,
       powerPreference: "high-performance"
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setClearColor(0x000000, 0);
     rendererRef.current = renderer;
 
@@ -382,8 +386,19 @@ function CircuitCanvas({ progress }: { progress: number }) {
 
     window.addEventListener('resize', handleResize);
 
+    // Pause rendering when not visible (tab switch, scroll away)
+    const observer = new IntersectionObserver(([entry]) => {
+      isVisibleRef.current = entry.isIntersecting;
+    }, { threshold: 0 });
+    observer.observe(canvas);
+
     // === ANIMATION LOOP ===
     const animate = () => {
+      // Skip rendering when not visible to save GPU
+      if (!isVisibleRef.current) {
+        frameRef.current = requestAnimationFrame(animate);
+        return;
+      }
       timeRef.current += 0.016;
       uniforms.uTime.value = timeRef.current;
       uniforms.uProgress.value = progressRef.current;
@@ -460,16 +475,31 @@ function CircuitCanvas({ progress }: { progress: number }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      observer.disconnect();
       cancelAnimationFrame(frameRef.current);
       renderer.dispose();
       scene.clear();
     };
-  }, []);
+  }, [isMobile]);
 
   // Update progress ref for animation loop
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
+
+  // On mobile, render a simple CSS gradient fallback instead of WebGL
+  if (isMobile) {
+    return (
+      <div
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        style={{
+          zIndex: 1,
+          background: `linear-gradient(90deg, transparent, rgba(34,211,238,${0.08 * progress}) ${progress * 100}%, transparent ${progress * 100 + 5}%)`,
+          transition: 'background 0.3s ease-out',
+        }}
+      />
+    );
+  }
 
   return (
     <canvas

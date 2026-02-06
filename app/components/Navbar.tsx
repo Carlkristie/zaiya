@@ -52,44 +52,38 @@ export default function Navbar() {
         </div>
       </button>
 
-      {/* Mobile Menu Button - Animated */}
-      <motion.button 
+      {/* Mobile Menu Button - CSS-only animation for instant response */}
+      <button 
         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-800 transition-colors relative overflow-hidden"
+        className="md:hidden flex items-center justify-center w-10 h-10 rounded-full bg-slate-700 hover:bg-slate-800 active:scale-90 transition-all duration-150 relative overflow-hidden z-[60]"
         aria-label="Toggle menu"
-        whileTap={{ scale: 0.9 }}
       >
         <div className="relative w-5 h-5">
-          <motion.span
-            className="absolute h-0.5 w-5 bg-white left-0 top-[6px]"
-            animate={{
-              rotate: mobileMenuOpen ? 45 : 0,
-              y: mobileMenuOpen ? 3 : 0,
+          <span
+            className="absolute h-0.5 w-5 bg-white left-0 transition-all duration-300 ease-in-out"
+            style={{
+              transform: mobileMenuOpen ? 'translateY(4px) rotate(45deg)' : 'translateY(6px)',
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
           />
-          <motion.span
-            className="absolute h-0.5 w-5 bg-white left-0 top-[10px]"
-            animate={{
+          <span
+            className="absolute h-0.5 w-5 bg-white left-0 top-[10px] transition-all duration-300 ease-in-out"
+            style={{
               opacity: mobileMenuOpen ? 0 : 1,
-              x: mobileMenuOpen ? -20 : 0,
+              transform: mobileMenuOpen ? 'translateX(-20px)' : 'none',
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
           />
-          <motion.span
-            className="absolute h-0.5 w-5 bg-white left-0 top-[14px]"
-            animate={{
-              rotate: mobileMenuOpen ? -45 : 0,
-              y: mobileMenuOpen ? -3 : 0,
+          <span
+            className="absolute h-0.5 w-5 bg-white left-0 transition-all duration-300 ease-in-out"
+            style={{
+              transform: mobileMenuOpen ? 'translateY(4px) rotate(-45deg)' : 'translateY(14px)',
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
           />
         </div>
-      </motion.button>
+      </button>
 
       </nav>
 
-      {/* Mobile Menu Fullscreen Overlay */}  
+      {/* Mobile Menu Fullscreen Overlay - Portal outside parent container */}  
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
@@ -97,7 +91,8 @@ export default function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 md:hidden overflow-hidden"
+            className="fixed inset-0 top-0 left-0 right-0 bottom-0 w-screen h-screen z-50 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 md:hidden overflow-hidden"
+            style={{ margin: 0, maxWidth: '100vw' }}
           >
             {/* Decorative Background Elements */}
             <div className="absolute inset-0 opacity-20">
@@ -106,23 +101,19 @@ export default function Navbar() {
             </div>
 
             {/* Close Button */}
-            <motion.button
-              initial={{ opacity: 0, rotate: -90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: 90 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
+            <button
               onClick={() => setMobileMenuOpen(false)}
               className="absolute top-6 right-6 z-50 w-12 h-12 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full border border-white/20"
             >
-              <motion.span
+              <span
                 className="absolute w-6 h-0.5 bg-white"
-                style={{ rotate: 45 }}
+                style={{ transform: 'rotate(45deg)' }}
               />
-              <motion.span
+              <span
                 className="absolute w-6 h-0.5 bg-white"
-                style={{ rotate: -45 }}
+                style={{ transform: 'rotate(-45deg)' }}
               />
-            </motion.button>
+            </button>
 
             {/* Menu Content */}
             <div className="relative h-full flex flex-col justify-center px-8 py-20">
@@ -136,32 +127,22 @@ export default function Navbar() {
                 ].map((item, i) => (
                   <motion.div
                     key={item.name}
-                    initial={{ opacity: 0, x: -50 }}
+                    initial={{ opacity: 0, x: -30 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -50 }}
-                    transition={{ delay: 0.1 + i * 0.1, duration: 0.5, ease: "easeOut" }}
+                    exit={{ opacity: 0, x: -30 }}
+                    transition={{ delay: 0.05 + i * 0.07, duration: 0.35, ease: "easeOut" }}
                   >
                     <Link 
                       href={item.href} 
                       onClick={() => setMobileMenuOpen(false)}
                       className="group flex items-center gap-4 py-3 overflow-hidden"
                     >
-                      <span className="text-sm font-mono text-white/40 group-hover:text-purple-400 transition-colors">
+                      <span className="text-sm font-mono text-white/40">
                         {item.index}
                       </span>
-                      <span className="text-4xl font-bold text-white group-hover:translate-x-2 transition-transform duration-300">
+                      <span className="text-4xl font-bold text-white">
                         {item.name}
                       </span>
-                      <motion.div
-                        className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-                        initial={{ x: -10 }}
-                        whileHover={{ x: 0 }}
-                      >
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                          <path d="M5 12h14"/>
-                          <path d="m12 5 7 7-7 7"/>
-                        </svg>
-                      </motion.div>
                     </Link>
                   </motion.div>
                 ))}
@@ -169,51 +150,25 @@ export default function Navbar() {
 
               {/* CTA Button */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
+                exit={{ opacity: 0, y: 15 }}
+                transition={{ delay: 0.35, duration: 0.4 }}
                 className="mt-16"
               >
-                <button className="group relative w-full bg-white text-slate-900 px-8 py-4 rounded-full font-bold text-lg overflow-hidden">
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    Get a quote
-                    <motion.svg 
-                      width="20" 
-                      height="20" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2"
-                      animate={{ x: [0, 5, 0] }}
-                      transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                    >
-                      <path d="M5 12h14"/>
-                      <path d="m12 5 7 7-7 7"/>
-                    </motion.svg>
-                  </span>
-                  <motion.div
-                    className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400"
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: 0 }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </button>
+                <Link href="/contact" onClick={() => setMobileMenuOpen(false)} className="group relative w-full block text-center bg-white text-slate-900 px-8 py-4 rounded-full font-bold text-lg overflow-hidden">
+                  Get a quote
+                  <span className="ml-2">→</span>
+                </Link>
               </motion.div>
 
               {/* Footer Info */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="mt-auto pt-8 border-t border-white/10"
-              >
+              <div className="mt-auto pt-8 border-t border-white/10">
                 <div className="flex items-center justify-between text-sm text-white/60">
                   <span>info@zaiya.com</span>
                   <span>+1 234 567 890</span>
                 </div>
-              </motion.div>
+              </div>
             </div>
           </motion.div>
         )}
@@ -222,23 +177,5 @@ export default function Navbar() {
 
 
     </div>
-  );
-}
-
-function MenuIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      className={className}
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth={2}
-        d="M4 8h16M4 16h16"
-      />
-    </svg>
   );
 }

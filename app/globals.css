@@ -49,6 +49,26 @@ html, body {
   width: 100%;
 }
 
+/* GPU-accelerate fixed/sticky elements on mobile */
+@media (max-width: 768px) {
+  .fixed {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  /* Reduce blur effects on mobile (very expensive) */
+  .blur-3xl {
+    filter: blur(40px) !important;
+  }
+  
+  .backdrop-blur-md {
+    -webkit-backdrop-filter: blur(8px) !important;
+    backdrop-filter: blur(8px) !important;
+  }
+}
+
 /* Mobile viewport height fix for iOS Safari */
 @supports (height: 100dvh) {
   .h-screen {
