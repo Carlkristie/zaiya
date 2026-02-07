@@ -51,22 +51,9 @@ function CircuitCanvas({ progress }: { progress: number }) {
   const frameRef = useRef<number>(0);
   const timeRef = useRef<number>(0);
   const progressRef = useRef<number>(0);
-  const [isMobile, setIsMobile] = useState(false);
-  const isVisibleRef = useRef(true);
-
-  // Detect mobile on mount
-  useEffect(() => {
-    const mobile = window.innerWidth < 768;
-    setIsMobile(mobile);
-    // Skip WebGL entirely on mobile for performance
-    if (mobile) return;
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   useEffect(() => {
-    if (!canvasRef.current || isMobile) return;
+    if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const width = canvas.clientWidth || window.innerWidth;
@@ -76,11 +63,11 @@ function CircuitCanvas({ progress }: { progress: number }) {
     const renderer = new THREE.WebGLRenderer({
       canvas,
       alpha: true,
-      antialias: false,
+      antialias: true,
       powerPreference: "high-performance"
     });
     renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     rendererRef.current = renderer;
 
@@ -107,8 +94,8 @@ function CircuitCanvas({ progress }: { progress: number }) {
     };
 
     // === BASE TRACE (dim, always visible - etched circuit) ===
-    const traceWidth = isMobile ? 6 : 7;
-    const traceGeometry = new THREE.PlaneGeometry(traceWidth, isMobile ? 0.01 : 0.012, isMobile ? 100 : 200, 1);
+    const traceWidth = 7;
+    const traceGeometry = new THREE.PlaneGeometry(traceWidth, 0.012, 200, 1);
     
     const baseTraceMaterial = new THREE.ShaderMaterial({
       uniforms,
@@ -290,8 +277,7 @@ function CircuitCanvas({ progress }: { progress: number }) {
     scene.add(halo);
 
     // === PARTICLES (trailing sparks) ===
-    // Reduce particle count on mobile for performance
-    const particleCount = isMobile ? 25 : 50;
+    const particleCount = 50;
     const particlePositions = new Float32Array(particleCount * 3);
     const particleVelocities: { x: number; y: number; life: number }[] = [];
     
@@ -386,19 +372,8 @@ function CircuitCanvas({ progress }: { progress: number }) {
 
     window.addEventListener('resize', handleResize);
 
-    // Pause rendering when not visible (tab switch, scroll away)
-    const observer = new IntersectionObserver(([entry]) => {
-      isVisibleRef.current = entry.isIntersecting;
-    }, { threshold: 0 });
-    observer.observe(canvas);
-
     // === ANIMATION LOOP ===
     const animate = () => {
-      // Skip rendering when not visible to save GPU
-      if (!isVisibleRef.current) {
-        frameRef.current = requestAnimationFrame(animate);
-        return;
-      }
       timeRef.current += 0.016;
       uniforms.uTime.value = timeRef.current;
       uniforms.uProgress.value = progressRef.current;
@@ -475,31 +450,16 @@ function CircuitCanvas({ progress }: { progress: number }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      observer.disconnect();
       cancelAnimationFrame(frameRef.current);
       renderer.dispose();
       scene.clear();
     };
-  }, [isMobile]);
+  }, []);
 
   // Update progress ref for animation loop
   useEffect(() => {
     progressRef.current = progress;
   }, [progress]);
-
-  // On mobile, render a simple CSS gradient fallback instead of WebGL
-  if (isMobile) {
-    return (
-      <div
-        className="absolute inset-0 w-full h-full pointer-events-none"
-        style={{
-          zIndex: 1,
-          background: `linear-gradient(90deg, transparent, rgba(34,211,238,${0.08 * progress}) ${progress * 100}%, transparent ${progress * 100 + 5}%)`,
-          transition: 'background 0.3s ease-out',
-        }}
-      />
-    );
-  }
 
   return (
     <canvas
@@ -683,8 +643,28 @@ export default function WorkflowJourneySection() {
   const [reducedMotion, setReducedMotion] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [translateX, setTranslateX] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
   const stationCount = workflowStations.length;
+
+  // Stable viewport height — avoids jitter from mobile address bar show/hide
+  useEffect(() => {
+    const updateVH = () => {
+      // Use visualViewport for the most reliable measurement on mobile
+      const vh = window.visualViewport?.height ?? window.innerHeight;
+      setViewportHeight(vh);
+    };
+    updateVH();
+    // Only update on resize/orientationchange, NOT on scroll
+    window.addEventListener('resize', updateVH);
+    window.addEventListener('orientationchange', updateVH);
+    window.visualViewport?.addEventListener('resize', updateVH);
+    return () => {
+      window.removeEventListener('resize', updateVH);
+      window.removeEventListener('orientationchange', updateVH);
+      window.visualViewport?.removeEventListener('resize', updateVH);
+    };
+  }, []);
 
   // Check reduced motion preference
   useEffect(() => {
@@ -704,15 +684,14 @@ export default function WorkflowJourneySection() {
     if (!section) return;
 
     const handleScroll = () => {
-      const rect = section.getBoundingClientRect();
       const sectionTop = section.offsetTop;
       const sectionHeight = section.offsetHeight;
-      const viewportHeight = window.innerHeight;
+      const viewportH = viewportHeight || window.innerHeight;
       const scrollY = window.scrollY;
 
       // Calculate the scroll range for this section
       const scrollStart = sectionTop;
-      const scrollEnd = sectionTop + sectionHeight - viewportHeight;
+      const scrollEnd = sectionTop + sectionHeight - viewportH;
       const scrollRange = scrollEnd - scrollStart;
 
       // Check if we're in the pinned zone
@@ -758,30 +737,41 @@ export default function WorkflowJourneySection() {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
     };
-  }, [stationCount]);
+  }, [stationCount, viewportHeight]);
 
-  // Calculate the fixed position offset when pinned
-  const sectionTop = sectionRef.current?.offsetTop || 0;
+  // Use dvh-aware height for the scroll runway, fallback to vh
+  const fallbackVH = typeof window !== 'undefined' ? window.innerHeight : 0;
+  const effectiveVH = viewportHeight || fallbackVH;
+
+  const runwayHeight = effectiveVH
+    ? `${stationCount * effectiveVH}px`
+    : `${stationCount * 100}vh`;
+
+  const pinnedHeight = effectiveVH ? `${effectiveVH}px` : '100vh';
 
   return (
     <section
       ref={sectionRef}
       className="relative"
+      data-scroll-pin
       // SCROLL RUNWAY: Section height = number of stations × viewport height
-      style={{ height: `${stationCount * 100}vh` }}
+      style={{ height: runwayHeight }}
     >
       {/* ================================
           PINNED VIEWPORT
           Uses fixed positioning when in scroll range
           ================================ */}
       <div 
-        className="w-full h-screen overflow-hidden bg-slate-950"
+        className="w-full overflow-hidden bg-slate-950"
         style={{
+          height: pinnedHeight,
           position: isInView ? 'fixed' : 'absolute',
           top: isInView ? 0 : undefined,
           bottom: !isInView && progressValue >= 1 ? 0 : undefined,
           left: 0,
           right: 0,
+          touchAction: 'pan-y',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         
@@ -834,7 +824,7 @@ export default function WorkflowJourneySection() {
         <div
           className="absolute top-0 left-0 h-full flex flex-nowrap"
           style={{ 
-            transform: `translateX(${translateX}px)`,
+            transform: `translate3d(${translateX}px, 0, 0)`,
             width: `${stationCount * 100}vw`,
             willChange: 'transform'
           }}

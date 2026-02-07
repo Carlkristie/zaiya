@@ -190,13 +190,6 @@ function MistTransition() {
   const smoothMouseRef = useRef<[number, number]>([-1, -1]);
   const rafRef = useRef(0);
   const startTimeRef = useRef(0);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Detect iOS/mobile: iOS Safari struggles with complex fragment shaders
-    const mobile = window.innerWidth < 768 || /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    setIsMobile(mobile);
-  }, []);
 
   const initGL = useCallback((canvas: HTMLCanvasElement) => {
     const gl = canvas.getContext("webgl", {
@@ -253,7 +246,7 @@ function MistTransition() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || isMobile) return;
+    if (!canvas) return;
 
     // Set canvas size
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -333,21 +326,7 @@ function MistTransition() {
         gl.deleteProgram(programRef.current);
       }
     };
-  }, [initGL, isMobile]);
-
-  // On mobile, render a simple CSS gradient transition instead
-  if (isMobile) {
-    return (
-      <div
-        className="absolute bottom-0 left-0 w-full pointer-events-none"
-        style={{
-          height: '200px',
-          zIndex: 5,
-          background: 'linear-gradient(to bottom, transparent 0%, rgba(248,250,252,0.3) 30%, rgba(248,250,252,0.7) 60%, white 100%)',
-        }}
-      />
-    );
-  }
+  }, [initGL]);
 
   return (
     <canvas

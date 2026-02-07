@@ -429,12 +429,6 @@ export default function LiquidReveal({ imageA, imageB, className = "", children,
   const containerRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number>(0);
   const glRef = useRef<WebGLRenderingContext | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Check for mobile on mount
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-  }, []);
 
   // Track active liquid positions for text tinting
   const [tintSpots, setTintSpots] = useState<Array<{ x: number; y: number; radius: number; opacity: number }>>([]);
@@ -674,7 +668,8 @@ export default function LiquidReveal({ imageA, imageB, className = "", children,
     const gl = glRef.current;
     if (!canvas || !container || !gl) return;
     
-    const dpr = Math.min(window.devicePixelRatio, 2);
+    const isMobileScreen = window.innerWidth < 768;
+    const dpr = isMobileScreen ? 1 : Math.min(window.devicePixelRatio, 2);
     const rect = container.getBoundingClientRect();
     
     canvas.width = rect.width * dpr;
@@ -929,9 +924,6 @@ export default function LiquidReveal({ imageA, imageB, className = "", children,
   }, []);
   
   useEffect(() => {
-    // Skip WebGL entirely on mobile for performance
-    if (isMobile) return;
-    
     initWebGL();
     
     const container = containerRef.current;
@@ -957,34 +949,13 @@ export default function LiquidReveal({ imageA, imageB, className = "", children,
       cancelAnimationFrame(animationRef.current);
       clearTimeout(timeoutId);
     };
-  }, [isMobile, initWebGL, resize, render, handleMouseMove, handleMouseEnter, handleMouseLeave]);
+  }, [initWebGL, resize, render, handleMouseMove, handleMouseEnter, handleMouseLeave]);
   
   // Generate CSS for tint spots
   const tintGradients = tintSpots.map((spot, i) => {
     // Parse tint color to extract RGB values and create gradient
     return `radial-gradient(circle at ${spot.x}% ${spot.y}%, ${tintColor.replace(/[\d.]+\)$/, `${spot.opacity})`)} 0%, transparent ${spot.radius}%)`;
   }).join(', ');
-  
-  // ═══ MOBILE: Simple image fallback (no WebGL) ═══
-  if (isMobile) {
-    return (
-      <div ref={containerRef} className={`relative w-full min-h-screen h-[100dvh] overflow-hidden ${className}`}>
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${imageB})` }}
-        />
-        <div
-          className="absolute inset-0 w-full h-full bg-cover bg-center opacity-30"
-          style={{ backgroundImage: `url(${imageA})` }}
-        />
-        <div className="relative z-10 w-full h-full flex items-center justify-center px-4 sm:px-6 md:px-8">
-          <div className="w-full max-w-5xl">
-            {children}
-          </div>
-        </div>
-      </div>
-    );
-  }
   
   return (
     <div ref={containerRef} className={`relative w-full min-h-screen h-[100dvh] overflow-hidden ${className}`}>

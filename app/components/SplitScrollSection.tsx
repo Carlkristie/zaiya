@@ -1,6 +1,6 @@
 "use client";
 import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { AnimatedGridPattern } from "./AnimatedGridPattern";
 
 const services = [
@@ -34,11 +34,6 @@ const services = [
 export default function SplitScrollSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef, { margin: "-10% 0px -10% 0px" });
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
-  }, []);
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -48,9 +43,9 @@ export default function SplitScrollSection() {
   const rightSideOpacity = useTransform(scrollYProgress, [0, 0.05, 0.95, 1], [0, 1, 1, 0]);
 
   return (
-    <section ref={containerRef} className="relative bg-black text-white">
+    <section ref={containerRef} data-scroll-pin className="relative bg-black text-white">
       {/* Right Side - Fixed Background (skip on mobile for performance) */}
-      {isInView && !isMobile && (
+      {isInView && (
         <motion.div 
           style={{ opacity: rightSideOpacity }}
           className="fixed top-0 right-0 w-full lg:w-1/2 h-screen overflow-hidden pointer-events-none"
